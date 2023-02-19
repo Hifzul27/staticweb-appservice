@@ -1,40 +1,80 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>File Upload</title>
-	<link href="https://fonts.googleapis.com/css?family=Montserrat&display=swap" rel="stylesheet">
-	<link rel="stylesheet" type="text/css" href="style.css">
+    <meta charset="UTF-8">
+    <title>File Upload</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
-	<header>
-		<h1>File Upload</h1>
-	</header>
+    <h1>Welcome To My Website. Please Upload Image for Processing by backend Webapp</h1>
+    <button id="upload-button">Upload New Image</button>
+    <button id="display-button">Display Uploaded Images</button>
 
-	<main>
-		<div class="button-container">
-			<button id="upload-button">Upload New Image</button>
-			<button id="display-button">Display Uploaded Images</button>
-		</div>
+    <div id="upload-form-container">
+        <form id="upload-form">
+            <input type="file" name="file" id="file">
+            <input type="submit" value="Upload">
+        </form>
+    </div>
 
-		<div id="upload-form-container">
-			<h2>Upload a File</h2>
-			<form id="upload-form">
-				<input type="file" name="file" id="file">
-				<input type="submit" value="Upload">
-			</form>
-		</div>
+    <div id="file-list-container">
+        <h1>Uploaded Files</h1>
+        <ul id="file-list"></ul>
+    </div>
 
-		<div id="file-list-container">
-			<h2>Uploaded Files</h2>
-			<ul id="file-list"></ul>
-		</div>
-	</main>
+    <script>
+        const uploadForm = document.getElementById('upload-form');
+        const fileInput = document.getElementById('file');
+        const fileList = document.getElementById('file-list');
+        const uploadButton = document.getElementById('upload-button');
+        const displayButton = document.getElementById('display-button');
+        const uploadFormContainer = document.getElementById('upload-form-container');
+        const fileListContainer = document.getElementById('file-list-container');
 
-	<footer>
-		<p>&copy; 2023 File Upload</p>
-	</footer>
+        uploadForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
 
-	<script src="script.js"></script>
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert('File uploaded successfully!');
+            } else {
+                alert('Failed to upload file.');
+            }
+        });
+
+        async function getFileList() {
+            const response = await fetch('/api/list_files');
+            const data = await response.json();
+
+            data.urls.forEach(url => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.setAttribute('href', url);
+                const filename = url.split('/').pop();
+                a.textContent = filename;
+                li.appendChild(a);
+                fileList.appendChild(li);
+            });
+        }
+
+        uploadButton.addEventListener('click', () => {
+            uploadFormContainer.style.display = 'block';
+            fileListContainer.style.display = 'none';
+        });
+
+        displayButton.addEventListener('click', () => {
+            getFileList();
+            uploadFormContainer.style.display = 'none';
+            fileListContainer.style.display = 'block';
+        });
+    </script>
 </body>
 </html>
