@@ -38,7 +38,7 @@
             const formData = new FormData();
             formData.append('file', file);
 
-            const response = await fetch('/upload', {
+            const response = await fetch('/https://testweb12345.azurewebsites.net/upload', {
                 method: 'POST',
                 body: formData
             });
@@ -51,7 +51,7 @@
         });
 
         async function getFileList() {
-            const response = await fetch('/list_files');
+            const response = await fetch('/https://testweb12345.azurewebsites.net/list_files');
             const data = await response.json();
 
             data.urls.forEach(url => {
